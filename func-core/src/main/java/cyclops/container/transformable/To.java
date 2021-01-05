@@ -23,9 +23,10 @@ public interface To<T extends To<?>> {
     /**
      * Fluent api for type conversion
      *
-     * @param reduce Funtion to convert this type
+     * @param reduce - function to convert this type
      * @return Converted type
      */
+    @SuppressWarnings("unchecked")
     default <R> R to(Function<? super T, ? extends R> reduce) {
         return reduce.apply((T) this);
     }

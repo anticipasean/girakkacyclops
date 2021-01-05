@@ -9,6 +9,7 @@ import cyclops.container.persistent.PersistentMap;
 import cyclops.function.enhanced.Function3;
 import cyclops.function.enhanced.Function4;
 import cyclops.function.higherkinded.DataWitness.hashMap;
+import cyclops.function.higherkinded.Higher;
 import cyclops.function.higherkinded.Higher2;
 import cyclops.reactive.ReactiveSeq;
 import java.io.Serializable;
@@ -81,8 +82,17 @@ public final class HashMap<K, V> implements ImmutableMap<K, V>, PersistentMap<K,
                                                      t2._2()));
     }
 
+    @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> narrow(HashMap<? extends K, ? extends V> map) {
         return (HashMap<K, V>) map;
+    }
+
+    public static <K, V> HashMap<K, V> narrowK(Higher<Higher<hashMap, K>, V> container) {
+        return (HashMap<K, V>) container;
+    }
+
+    public static <K, V> HashMap<K, V> narrowK2(Higher2<hashMap, K, V> container) {
+        return (HashMap<K, V>) container;
     }
 
     public int size() {

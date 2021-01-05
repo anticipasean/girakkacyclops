@@ -11,6 +11,11 @@ import java.util.function.Supplier;
 
 public interface PersistentMap<K, V> extends Iterable<Tuple2<K, V>> {
 
+    @SuppressWarnings("unchecked")
+    static <K, V> PersistentMap<K, V> narrow(PersistentMap<? extends K, ? extends V> map){
+        return (PersistentMap<K, V>) map;
+    }
+
     PersistentMap<K, V> put(K key,
                             V value);
 

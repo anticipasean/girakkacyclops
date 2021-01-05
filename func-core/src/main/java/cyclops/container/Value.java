@@ -1,12 +1,14 @@
 package cyclops.container;
 
 import cyclops.container.control.Either;
+import cyclops.container.control.Ior;
 import cyclops.container.control.LazyEither;
 import cyclops.container.control.Maybe;
 import cyclops.container.control.Option;
 import cyclops.container.control.Try;
 import cyclops.container.foldable.SealedOr;
 import cyclops.container.immutable.impl.NonEmptyList;
+import cyclops.container.immutable.tuple.Tuple2;
 import cyclops.function.combiner.Monoid;
 import cyclops.function.enhanced.Function0;
 import cyclops.reactive.ReactiveSeq;
@@ -51,7 +53,7 @@ public interface Value<T> extends SealedOr<T>, Iterable<T>, Publisher<T> {
                     () -> false);
     }
 
-    default boolean isEmpty(){
+    default boolean isEmpty() {
         return !isPresent();
     }
 
@@ -224,6 +226,17 @@ public interface Value<T> extends SealedOr<T>, Iterable<T>, Publisher<T> {
     default Option<T> toOption() {
         return fold(Option::some,
                     Option::none);
+    }
+
+    default <U> Option<Ior<T, U>> toIor(Option<U> otherOption) {
+        return Tuple2.of(this.isPresent() ? this.toOption() : Option.<T>none(),
+                         otherOption == null ? Option.<U>none() : otherOption)
+                     .fold((tOpt, uOpt) -> Option.ofNullable(tOpt.zip(uOpt,
+                                                                      Ior::both)
+                                                                 .fold(ior -> ior,
+                                                                       () -> tOpt.fold(Ior::left,
+                                                                                       () -> uOpt.fold(Ior::right,
+                                                                                                       () -> null)))));
     }
 
 

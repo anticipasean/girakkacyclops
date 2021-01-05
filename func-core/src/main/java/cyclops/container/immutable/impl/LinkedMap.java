@@ -9,6 +9,7 @@ import cyclops.container.persistent.PersistentMap;
 import cyclops.function.enhanced.Function3;
 import cyclops.function.enhanced.Function4;
 import cyclops.function.higherkinded.DataWitness.linkedHashMap;
+import cyclops.function.higherkinded.Higher;
 import cyclops.function.higherkinded.Higher2;
 import cyclops.reactive.ReactiveSeq;
 import java.util.Iterator;
@@ -61,6 +62,7 @@ public final class LinkedMap<K, V> implements ImmutableMap<K, V>, Higher2<linked
         return res;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static <K, V> LinkedMap<K, V> fromMap(PersistentMap<K, V> map) {
         if (map instanceof LinkedMap) {
             return (LinkedMap) map;
@@ -78,6 +80,19 @@ public final class LinkedMap<K, V> implements ImmutableMap<K, V>, Higher2<linked
                           .foldLeft(empty(),
                                     (m, t2) -> m.put(t2._1(),
                                                      t2._2()));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> LinkedMap<K, V> narrow(LinkedMap<? extends K, ? extends V> map) {
+        return (LinkedMap<K, V>) map;
+    }
+
+    public static <K, V> LinkedMap<K, V> narrowK(Higher<Higher<linkedHashMap, K>, V> container) {
+        return (LinkedMap<K, V>) container;
+    }
+
+    public static <K, V> LinkedMap<K, V> narrowK2(Higher2<linkedHashMap, K, V> container) {
+        return (LinkedMap<K, V>) container;
     }
 
     public Option<V> get(K key) {
@@ -122,53 +137,53 @@ public final class LinkedMap<K, V> implements ImmutableMap<K, V>, Higher2<linked
     }
 
     @Override
-    public <R> ImmutableMap<K, R> mapValues(Function<? super V, ? extends R> map) {
+    public <R> LinkedMap<K, R> mapValues(Function<? super V, ? extends R> map) {
         return fromStream(stream().map(t -> t.map2(map)));
     }
 
     @Override
-    public <R> ImmutableMap<R, V> mapKeys(Function<? super K, ? extends R> map) {
+    public <R> LinkedMap<R, V> mapKeys(Function<? super K, ? extends R> map) {
         return fromStream(stream().map(t -> t.map1(map)));
     }
 
     @Override
-    public <R1, R2> ImmutableMap<R1, R2> bimap(BiFunction<? super K, ? super V, ? extends Tuple2<R1, R2>> map) {
+    public <R1, R2> LinkedMap<R1, R2> bimap(BiFunction<? super K, ? super V, ? extends Tuple2<R1, R2>> map) {
         return fromStream(stream().map(t -> t.transform(map)));
     }
 
     @Override
-    public <K2, V2> ImmutableMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends ImmutableMap<K2, V2>> mapper) {
+    public <K2, V2> LinkedMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends ImmutableMap<K2, V2>> mapper) {
         return fromStream(stream().concatMap(t -> t.transform(mapper)));
     }
 
     @Override
-    public <K2, V2> ImmutableMap<K2, V2> concatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+    public <K2, V2> LinkedMap<K2, V2> concatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         return fromStream(stream().concatMap(t -> t.transform(mapper)));
     }
 
     @Override
-    public ImmutableMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
+    public LinkedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
         return fromStream(stream().filter(predicate));
     }
 
     @Override
-    public ImmutableMap<K, V> filterKeys(Predicate<? super K> predicate) {
+    public LinkedMap<K, V> filterKeys(Predicate<? super K> predicate) {
         return fromStream(stream().filter(t -> predicate.test(t._1())));
     }
 
     @Override
-    public ImmutableMap<K, V> filterValues(Predicate<? super V> predicate) {
+    public LinkedMap<K, V> filterValues(Predicate<? super V> predicate) {
         return fromStream(stream().filter(t -> predicate.test(t._2())));
     }
 
     @Override
-    public <R> ImmutableMap<K, R> map(Function<? super V, ? extends R> fn) {
+    public <R> LinkedMap<K, R> map(Function<? super V, ? extends R> fn) {
         return fromStream(stream().map(t -> Tuple.tuple(t._1(),
                                                         fn.apply(t._2()))));
     }
 
     @Override
-    public <R1, R2> ImmutableMap<R1, R2> bimap(Function<? super K, ? extends R1> fn1,
+    public <R1, R2> LinkedMap<R1, R2> bimap(Function<? super K, ? extends R1> fn1,
                                                Function<? super V, ? extends R2> fn2) {
         return fromStream(stream().map(t -> Tuple.tuple(fn1.apply(t._1()),
                                                         fn2.apply(t._2()))));
@@ -199,14 +214,14 @@ public final class LinkedMap<K, V> implements ImmutableMap<K, V>, Higher2<linked
 
 
     @Override
-    public ImmutableMap<K, V> put(Tuple2<K, V> keyAndValue) {
+    public LinkedMap<K, V> put(Tuple2<K, V> keyAndValue) {
         return put(keyAndValue._1(),
                    keyAndValue._2());
     }
 
     @Override
-    public ImmutableMap<K, V> putAll(PersistentMap<? extends K, ? extends V> map) {
-        PersistentMap<K, V> narrow = (PersistentMap<K, V>) map;
+    public LinkedMap<K, V> putAll(PersistentMap<? extends K, ? extends V> map) {
+        PersistentMap<K, V> narrow = PersistentMap.narrow(map);
         ImmutableMap<K, V> res = HashMap.empty();
         Vector<Tuple2<K, V>> ordering = order;
         for (Tuple2<K, V> t : narrow) {
@@ -353,6 +368,7 @@ public final class LinkedMap<K, V> implements ImmutableMap<K, V>, Higher2<linked
                                                               yieldingFunction);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -361,7 +377,6 @@ public final class LinkedMap<K, V> implements ImmutableMap<K, V>, Higher2<linked
         if (o == null) {
             return false;
         }
-
         if (o instanceof PersistentMap) {
             PersistentMap<K, V> m = (PersistentMap<K, V>) o;
             return equalTo(m);

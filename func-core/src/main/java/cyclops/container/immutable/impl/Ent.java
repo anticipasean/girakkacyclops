@@ -2,6 +2,7 @@ package cyclops.container.immutable.impl;
 
 import static java.util.Objects.requireNonNull;
 
+import cyclops.container.control.Eval;
 import cyclops.container.control.Maybe;
 import cyclops.container.control.Option;
 import cyclops.container.control.Try;
@@ -1707,10 +1708,14 @@ public interface Ent<K, V> extends PersistentMap<K, V> {
     final class EntImpl<K, V> implements Ent<K, V> {
 
         private final ImmutableMap<K, V> data;
+        private final Eval<String> toStringOutput;
 
         public EntImpl(ImmutableMap<K, V> data) {
             this.data = requireNonNull(data,
                                        "data");
+            this.toStringOutput = Eval.later(() -> String.join(":",
+                                                               Ent.class.getSimpleName(),
+                                                               data.mkString()));
         }
 
         @Override
@@ -1733,6 +1738,11 @@ public interface Ent<K, V> extends PersistentMap<K, V> {
         @Override
         public int hashCode() {
             return Objects.hash(data);
+        }
+
+        @Override
+        public String toString() {
+            return toStringOutput.get();
         }
     }
 }

@@ -37,6 +37,14 @@ public interface Function2<T1, T2, R> extends BiFunction<T1, T2, R>, To<Function
         return triFunc;
     }
 
+    @SuppressWarnings("unchecked")
+    static <T1, T2, R> Function2<T1, T2, R> narrow(BiFunction<? super T1, ? extends T2, ? extends R> fn) {
+        if (fn instanceof Function2) {
+            return (Function2<T1, T2, R>) fn;
+        }
+        return Function2.of((BiFunction<T1, T2, R>) fn);
+    }
+
     static <T1, T2, R> Function2<T1, T2, R> _1(Function<T1, R> fn) {
         return (a, b) -> fn.apply(a);
     }

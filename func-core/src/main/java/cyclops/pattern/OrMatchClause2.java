@@ -41,6 +41,23 @@ public interface OrMatchClause2<K, V, KI, VI, KO, VO> extends Clause<MatchResult
 
     }
 
+    default <KI, VI> OrThenClause2<K, V, K, VI, KO, VO> keyEqualToAndValueOfType(KI otherKey,
+                                                                                 Class<VI> possibleValueType) {
+        return OrThenClause2.of(() -> MatchResult2.of(subject().either()
+                                                               .mapLeft(kvkiviOptTuple -> kvkiviOptTuple._1()
+                                                                                                        .map1(k -> Option.ofNullable(k)
+                                                                                                                         .filter(k1 -> k1.equals(otherKey)))
+                                                                                                        .map2(v -> Option.ofNullable(v)
+                                                                                                                         .flatMap(VariantMapper.inputTypeMapper(possibleValueType)))
+                                                                                                        .fold((kOpt, viOpt) -> kOpt.flatMap(k -> viOpt.map(vi -> Tuple2.of(k,
+                                                                                                                                                                           vi)))))
+                                                               .mapLeft(kViTupOpt -> Tuple2.of(subject().either()
+                                                                                                        .leftOrElse(null)
+                                                                                                        ._1(),
+                                                                                               kViTupOpt))));
+
+    }
+
     default <I> OrThenClause2<K, V, K, V, KO, VO> valueEqualTo(I otherObject) {
         return OrThenClause2.of(() -> MatchResult2.of(subject().either()
                                                                .mapLeft(kvkiviOptTuple -> kvkiviOptTuple._1()

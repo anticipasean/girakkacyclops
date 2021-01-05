@@ -1,8 +1,8 @@
 package cyclops.container.immutable.tuple;
 
 
-import cyclops.container.relational.EqualTo;
 import cyclops.container.ordering.OrderedBy;
+import cyclops.container.relational.EqualTo;
 import cyclops.container.transformable.To;
 import cyclops.function.cacheable.Memoize;
 import cyclops.function.combiner.Monoid;
@@ -75,6 +75,11 @@ public class Tuple3<T1, T2, T3> implements To<Tuple3<T1, T2, T3>>, Serializable,
 
     public static <T1, T2, T3> Tuple3<T1, T2, T3> narrowK(Higher<Higher<Higher<tuple3, T1>, T2>, T3> ds) {
         return (Tuple3<T1, T2, T3>) ds;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T1, T2, T3> Tuple3<T1, T2, T3> narrow(Tuple3<? extends T1, ? extends T2, ? extends T3> tuple3) {
+        return (Tuple3<T1, T2, T3>) tuple3;
     }
 
     public T1 _1() {

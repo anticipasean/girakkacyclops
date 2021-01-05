@@ -70,21 +70,15 @@ public interface Ior<LT, RT> extends To<Ior<LT, RT>>, Value<RT>, OrElseValue<RT,
      * @return Consumer we can applyHKT to consume value
      */
     static <X, LT extends X, M extends X, RT extends X> Consumer<Consumer<? super X>> consumeAny(Ior<LT, RT> either) {
-        return in -> visitAny(in,
-                              either);
+        return in -> foldAny(in,
+                             either);
     }
 
     static <X, LT extends X, M extends X, RT extends X, R> Function<Function<? super X, R>, R> applyAny(Ior<LT, RT> either) {
-        return in -> visitAny(either,
-                              in);
+        return in -> Ior.foldAny(either,
+                                 in);
     }
 
-    @Deprecated //use foldAny
-    static <X, PT extends X, ST extends X, R> R visitAny(Ior<ST, PT> either,
-                                                         Function<? super X, ? extends R> fn) {
-        return foldAny(either,
-                       fn);
-    }
 
     static <X, PT extends X, ST extends X, R> R foldAny(Ior<ST, PT> either,
                                                         Function<? super X, ? extends R> fn) {
@@ -93,14 +87,14 @@ public interface Ior<LT, RT> extends To<Ior<LT, RT>>, Value<RT>, OrElseValue<RT,
                            (a, b) -> fn.apply(a));
     }
 
-    static <X, LT extends X, RT extends X> X visitAny(Consumer<? super X> c,
-                                                      Ior<LT, RT> either) {
+    static <X, LT extends X, RT extends X> X foldAny(Consumer<? super X> c,
+                                                     Ior<LT, RT> either) {
         Function<? super X, X> fn = x -> {
             c.accept(x);
             return x;
         };
-        return visitAny(either,
-                        fn);
+        return Ior.foldAny(either,
+                           fn);
     }
 
     /**

@@ -1,11 +1,11 @@
 package cyclops.container.immutable.tuple;
 
 
-import cyclops.container.relational.EqualTo;
 import cyclops.container.control.Either;
 import cyclops.container.control.Option;
 import cyclops.container.filterable.Filterable;
 import cyclops.container.ordering.OrderedBy;
+import cyclops.container.relational.EqualTo;
 import cyclops.container.transformable.To;
 import cyclops.container.transformable.Transformable;
 import cyclops.function.cacheable.Memoize;
@@ -46,6 +46,11 @@ public class Tuple1<T> implements To<Tuple1<T>>, Serializable, Transformable<T>,
                 return supplier.get();
             }
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Tuple1<T> narrow(Tuple1<? extends T> tuple1) {
+        return (Tuple1<T>) tuple1;
     }
 
     public static <T> Tuple1<T> narrowK(Higher<tuple1, T> ds) {

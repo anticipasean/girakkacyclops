@@ -63,7 +63,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
 
     private final CompletableFuture<T> future;
 
-    public Future(CompletableFuture<T> future) {
+    private Future(CompletableFuture<T> future) {
         this.future = future;
     }
 
@@ -115,6 +115,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @return First Future to complete
      * @see CompletableFuture#anyOf(CompletableFuture...)
      */
+    @SuppressWarnings("unchecked")
     public static <T> Future<T> anyOf(Future<T>... fts) {
         CompletableFuture<T>[] array = new CompletableFuture[fts.length];
         for (int i = 0; i < fts.length; i++) {
@@ -132,6 +133,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * provided Future that failed.
      * @see CompletableFuture#allOf(CompletableFuture...)
      */
+    @SuppressWarnings("unchecked")
     public static <T> Future<T> allOf(Future<T>... fts) {
         CompletableFuture<T>[] array = new CompletableFuture[fts.length];
         for (int i = 0; i < fts.length; i++) {
@@ -186,7 +188,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      *
      * @param pub Publisher to extract value from
      * @param ex  Executor to extract value on
-     * @return Future populated asyncrhonously from Publisher
+     * @return Future populated asynchronously from Publisher
      */
     public static <T> Future<T> fromPublisher(final Publisher<T> pub,
                                               final Executor ex) {
@@ -196,7 +198,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     /**
-     * Construct a Future asyncrhonously that contains a single value extracted from the supplied Iterable
+     * Construct a Future asynchronously that contains a single value extracted from the supplied Iterable
      * <pre>
      * {@code
      *  ReactiveSeq<Integer> stream =  ReactiveSeq.of(1,2,3);
@@ -210,7 +212,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      *
      * @param iterable Iterable to generate a Future from
      * @param ex       Executor to extract value on
-     * @return Future populated asyncrhonously from Iterable
+     * @return Future populated asynchronously from Iterable
      */
     public static <T> Future<T> fromIterable(final Iterable<T> iterable,
                                              final Executor ex) {
@@ -300,6 +302,16 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      */
     public static <T> Future<T> of(final CompletableFuture<T> f) {
         return new Future<>(f);
+    }
+
+    /**
+     * Create a Future instance from the supplied CompletableFuture
+     *
+     * @param f CompletableFuture to wrap as a Future
+     * @return Future wrapping the supplied CompletableFuture
+     */
+    public static <T> Future<T> of(final CompletionStage<T> f) {
+        return new Future<>(f.toCompletableFuture());
     }
 
     /**
@@ -641,7 +653,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     /**
-     * Create a Future object that asyncrhonously populates using the Common ForkJoinPool from the user provided Supplier
+     * Create a Future object that asynchronously populates using the Common ForkJoinPool from the user provided Supplier
      *
      * @param s Supplier to asynchronously populate results from
      * @return Future asynchronously populated from the Supplier
@@ -651,7 +663,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     /**
-     * Create a Future object that asyncrhonously populates using the provided Executor and Supplier
+     * Create a Future object that asynchronously populates using the provided Executor and Supplier
      *
      * @param s  Supplier to asynchronously populate results from
      * @param ex Executro to asynchronously populate results with
@@ -669,6 +681,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
                   ex);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> Future<T> narrow(Future<? extends T> of) {
         return (Future<T>) of;
     }
@@ -773,6 +786,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.container.MonadicValue#forEach4(java.util.function.Function, java.util.function.BiFunction, com.oath.cyclops.util.function.TriFunction, com.oath.cyclops.util.function.QuadFunction)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <T2, R1, R2, R3, R> Future<R> forEach4(Function<? super T, ? extends MonadicValue<R1>> value1,
                                                   BiFunction<? super T, ? super R1, ? extends MonadicValue<R2>> value2,
                                                   Function3<? super T, ? super R1, ? super R2, ? extends MonadicValue<R3>> value3,
@@ -787,6 +801,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.container.MonadicValue#forEach4(java.util.function.Function, java.util.function.BiFunction, com.oath.cyclops.util.function.TriFunction, com.oath.cyclops.util.function.QuadFunction, com.oath.cyclops.util.function.QuadFunction)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <T2, R1, R2, R3, R> Future<R> forEach4(Function<? super T, ? extends MonadicValue<R1>> value1,
                                                   BiFunction<? super T, ? super R1, ? extends MonadicValue<R2>> value2,
                                                   Function3<? super T, ? super R1, ? super R2, ? extends MonadicValue<R3>> value3,
@@ -804,6 +819,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.container.MonadicValue#forEach3(java.util.function.Function, java.util.function.BiFunction, com.oath.cyclops.util.function.TriFunction)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <T2, R1, R2, R> Future<R> forEach3(Function<? super T, ? extends MonadicValue<R1>> value1,
                                               BiFunction<? super T, ? super R1, ? extends MonadicValue<R2>> value2,
                                               Function3<? super T, ? super R1, ? super R2, ? extends R> yieldingFunction) {
@@ -817,6 +833,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.container.MonadicValue#forEach3(java.util.function.Function, java.util.function.BiFunction, com.oath.cyclops.util.function.TriFunction, com.oath.cyclops.util.function.TriFunction)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <T2, R1, R2, R> Future<R> forEach3(Function<? super T, ? extends MonadicValue<R1>> value1,
                                               BiFunction<? super T, ? super R1, ? extends MonadicValue<R2>> value2,
                                               Function3<? super T, ? super R1, ? super R2, Boolean> filterFunction,
@@ -832,6 +849,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.container.MonadicValue#forEach2(java.util.function.Function, java.util.function.BiFunction)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <R1, R> Future<R> forEach2(Function<? super T, ? extends MonadicValue<R1>> value1,
                                       BiFunction<? super T, ? super R1, ? extends R> yieldingFunction) {
 
@@ -843,6 +861,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.container.MonadicValue#forEach2(java.util.function.Function, java.util.function.BiFunction, java.util.function.BiFunction)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <R1, R> Future<R> forEach2(Function<? super T, ? extends MonadicValue<R1>> value1,
                                       BiFunction<? super T, ? super R1, Boolean> filterFunction,
                                       BiFunction<? super T, ? super R1, ? extends R> yieldingFunction) {
@@ -863,11 +882,11 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * <pre>
      * {@code
      * Future.ofResult(10)
-     * .visitAsync(i->i*2, e->-1);
+     * .foldAsync(i->i*2, e->-1);
      * //Future[20]
      *
      * Future.<Integer>ofError(new RuntimeException())
-     * .visitAsync(i->i*2, e->-1)
+     * .foldAsync(i->i*2, e->-1)
      * //Future[-1]
      *
      * }
@@ -877,13 +896,6 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @param failure Function to execute if this Future fails
      * @return Future with the eventual result of the executed Function
      */
-    @Deprecated //use foldAsync
-    public <R> Future<R> visitAsync(Function<? super T, ? extends R> success,
-                                    Function<? super Throwable, ? extends R> failure) {
-        return foldAsync(success,
-                         failure);
-    }
-
     public <R> Future<R> foldAsync(Function<? super T, ? extends R> success,
                                    Function<? super Throwable, ? extends R> failure) {
         Future<R> f = map(success);
@@ -891,16 +903,16 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     /**
-     * Blocking analogue to visitAsync. Visit the state of this Future, block until ready.
+     * Blocking analogue to foldAsync. Get the state of this Future, block until ready.
      *
      * <pre>
      * {@code
      *  Future.ofResult(10)
-     * .visit(i->i*2, e->-1);
+     * .fold(i->i*2, e->-1);
      * //20
      *
      * Future.<Integer>ofError(new RuntimeException())
-     * .visit(i->i*2, e->-1)
+     * .fold(i->i*2, e->-1)
      * //[-1]
      *
      * }
@@ -932,7 +944,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     /**
-     * Asyncrhonous transform operation
+     * Asynchronous transform operation
      *
      * @param fn Transformation function
      * @param ex Executor to execute the transformation asynchronously
@@ -1045,6 +1057,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see
      * cyclops.container.MonadicValue#flatMap(java.util.function.Function)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <R> Future<R> flatMap(final Function<? super T, ? extends MonadicValue<? extends R>> mapper) {
         return Future.of(future.thenCompose(t -> (CompletionStage<R>) Future.fromMonadicValue(mapper.apply(t))
@@ -1052,12 +1065,13 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     /**
-     * A flatMap operation that accepts a CompleteableFuture CompletionStage as the return type
+     * A flatMap operation that accepts a CompletableFuture CompletionStage as the return type
      *
      * @param mapper Mapping function
      * @return FlatMapped Future
      */
-    public <R> Future<R> flatMapCf(final Function<? super T, ? extends CompletionStage<? extends R>> mapper) {
+    @SuppressWarnings("unchecked")
+    public <R> Future<R> flatMapCompletionStage(final Function<? super T, ? extends CompletionStage<? extends R>> mapper) {
         return Future.of(future.thenCompose(t -> (CompletionStage<R>) mapper.apply(t)));
     }
 
@@ -1091,6 +1105,10 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
         return this.future;
     }
 
+    public CompletionStage<T> toCompletableStage() {
+        return this.future;
+    }
+
     /**
      * Returns a new Future that, when this Future completes exceptionally is executed with this Future exception as the argument
      * to the supplied function. Otherwise, if this Future completes normally, applyHKT the returned Future also completes
@@ -1109,6 +1127,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @param fn the function to use to compute the value of the returned Future if this Future completed exceptionally
      * @return the new Future
      */
+    @SuppressWarnings("unchecked")
     public Future<T> recover(final Function<? super Throwable, ? extends T> fn) {
         return Future.of(toCompletableFuture().exceptionally((Function) fn));
     }
@@ -1123,7 +1142,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * <pre>
      * {@code
      *  Future.ofResult(1)
-     *         .map(i->i*2,e->-1);
+     *         .bimap(i->i*2,e->-1);
      * //Future[2]
      *
      * }</pre>
@@ -1132,8 +1151,8 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @param failure Mapping function for failed outcomes
      * @return New Future mapped to a new state
      */
-    public <R> Future<R> map(final Function<? super T, R> success,
-                             final Function<Throwable, R> failure) {
+    public <R> Future<R> bimap(final Function<? super T, R> success,
+                               final Function<Throwable, R> failure) {
         return Future.of(future.thenApply(success)
                                .exceptionally(failure));
     }
@@ -1181,6 +1200,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
         return toMaybe().filter(fn);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <U> Maybe<U> ofType(final Class<? extends U> type) {
 
@@ -1206,6 +1226,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <S, U> Future<Tuple3<T, S, U>> zip3(Iterable<? extends S> second,
                                                Iterable<? extends U> third) {
         return (Future) Zippable.super.zip3(second,
@@ -1213,6 +1234,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <S, U, R> Future<R> zip3(Iterable<? extends S> second,
                                     Iterable<? extends U> third,
                                     Function3<? super T, ? super S, ? super U, ? extends R> fn3) {
@@ -1222,6 +1244,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T2, T3, T4> Future<Tuple4<T, T2, T3, T4>> zip4(Iterable<? extends T2> second,
                                                            Iterable<? extends T3> third,
                                                            Iterable<? extends T4> fourth) {
@@ -1231,6 +1254,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T2, T3, T4, R> Future<R> zip4(Iterable<? extends T2> second,
                                           Iterable<? extends T3> third,
                                           Iterable<? extends T4> fourth,
@@ -1280,6 +1304,7 @@ public class Future<T> implements To<Future<T>>, MonadicValue<T>, Completable<T>
      * @see cyclops.function.combiner.Zippable#zip(java.lang.Iterable)
      */
     @Override
+    @SuppressWarnings("unchecked")
     public <U> Future<Tuple2<T, U>> zip(final Iterable<? extends U> other) {
         return (Future) Zippable.super.zip(other);
     }

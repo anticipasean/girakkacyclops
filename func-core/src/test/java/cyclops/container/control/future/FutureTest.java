@@ -157,28 +157,7 @@ public class FutureTest {
         f.complete(10);
     }
 
-    @Test
-    public void testVisitAsync() {
 
-        int r = Future.ofResult(10)
-                      .visitAsync(i -> i * 2,
-                                  e -> -1)
-                      .toOptional()
-                      .get();
-        assertThat(20,
-                   equalTo(r));
-    }
-
-    @Test
-    public void testVisitFailAsync() {
-
-        int r = Future.<Integer>ofError(new RuntimeException()).visitAsync(i -> i * 2,
-                                                                           e -> -1)
-                                                               .toOptional()
-                                                               .get();
-        assertThat(-1,
-                   equalTo(r));
-    }
 
     @Test
     public void testVisit() {
@@ -846,7 +825,7 @@ public class FutureTest {
     @Test
     public void mapBoth() {
         assertThat(Future.ofResult(1)
-                         .map(i -> i * 2,
+                         .bimap(i -> i * 2,
                               e -> -1)
                          .get(),
                    equalTo(Try.success(2)));

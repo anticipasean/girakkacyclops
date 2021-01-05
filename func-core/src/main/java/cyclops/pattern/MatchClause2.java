@@ -4,7 +4,6 @@ package cyclops.pattern;
 import cyclops.container.control.Option;
 import cyclops.container.immutable.tuple.Tuple2;
 import cyclops.reactive.ReactiveSeq;
-import cyclops.stream.type.Streamable;
 import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -30,6 +29,19 @@ public interface MatchClause2<K, V> extends Clause<Tuple2<K, V>> {
                                               Option.ofNullable(subject()._1())
                                                     .filter(k -> k.equals(otherObject))
                                                     .map(k -> subject())));
+    }
+
+    default <KI, VI> ThenClause2<K, V, K, VI> keyEqualToAndValueOfType(KI otherKey,
+                                                                       Class<VI> possibleValueType) {
+        return ThenClause2.of(() -> subject().map1(k -> Option.ofNullable(k)
+                                                              .filter(k1 -> k1.equals(otherKey)))
+                                             .map2(v -> Option.ofNullable(v)
+                                                              .flatMap(VariantMapper.inputTypeMapper(possibleValueType)))
+                                             .fold((kOpt, viOpt) -> {
+                                                 return Tuple2.of(subject(),
+                                                                  kOpt.flatMap(k -> viOpt.map(vi -> Tuple2.of(k,
+                                                                                                              vi))));
+                                             }));
     }
 
     default <I> ThenClause2<K, V, K, V> valueEqualTo(I otherObject) {

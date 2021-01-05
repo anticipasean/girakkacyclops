@@ -419,6 +419,18 @@ public interface Option<T> extends To<Option<T>>, OrElseValue<T, Option<T>>, Mon
         return some(t);
     }
 
+    static <T, U> Option<Ior<T, U>> fromTwoOptions(final Option<T> option1,
+                                                   final Option<U> option2) {
+        return Tuple2.of(option1 == null ? Option.<T>none() : option1,
+                         option2 == null ? Option.<U>none() : option2)
+                     .fold((tOpt, uOpt) -> Option.ofNullable(tOpt.zip(uOpt,
+                                                                      Ior::both)
+                                                                 .fold(ior -> ior,
+                                                                       () -> tOpt.fold(Ior::left,
+                                                                                       () -> uOpt.fold(Ior::right,
+                                                                                                       () -> null)))));
+    }
+
     default <R> Option<R> attemptFlatMap(Function<? super T, ? extends Option<? extends R>> fn) {
         return flatMap(t -> {
             try {

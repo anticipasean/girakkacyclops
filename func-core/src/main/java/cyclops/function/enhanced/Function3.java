@@ -25,6 +25,16 @@ public interface Function3<S1, S2, S3, R> extends Function1<S1, Function1<S2, Fu
         return triFunc;
     }
 
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, R> Function3<T1, T2, T3, R> narrow(final Function3<? extends T1, ? extends T2, ? extends T3, ? extends R> func){
+        return (Function3<T1, T2, T3, R>) func;
+    }
+
+//    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, R> Function3<T1, T2, T3, R> λn(final Function3<? super T1, ? super T2, ? super T3, ? extends R> func){
+        return (a, b, c) -> func.apply(a, b, c);
+    }
+
     static <T1, T2, T3, R> Function3<T1, T2, T3, R> constant(R t) {
         return (a, b, c) -> t;
     }

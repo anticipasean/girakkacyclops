@@ -52,10 +52,10 @@ public class Ior2Test {
            .to(Ior::consumeAny)
            .accept(System.out::println);
         Ior.right(10)
-           .to(e -> Ior.visitAny(System.out::println,
-                                 e));
+           .to(e -> Ior.foldAny(System.out::println,
+                                e));
         Object value = Ior.right(10)
-                          .to(e -> Ior.visitAny(e,
+                          .to(e -> Ior.foldAny(e,
                                                 x -> x));
         assertThat(value,
                    equalTo(10));

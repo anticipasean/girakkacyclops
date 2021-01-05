@@ -1,9 +1,9 @@
 package cyclops.container.immutable.tuple;
 
 
-import cyclops.container.relational.EqualTo;
 import cyclops.container.control.Either;
 import cyclops.container.ordering.OrderedBy;
+import cyclops.container.relational.EqualTo;
 import cyclops.container.transformable.To;
 import cyclops.function.cacheable.Memoize;
 import cyclops.function.combiner.Monoid;
@@ -83,6 +83,7 @@ public class Tuple2<T1, T2> implements To<Tuple2<T1, T2>>, Serializable, EqualTo
         return next[0].map2(x -> x.orElse(null));
     }
 
+    @SuppressWarnings("unchecked")
     public static <K, V> Tuple2<K, V> narrow(Tuple2<? extends K, ? extends V> t) {
         return (Tuple2<K, V>) t;
     }
